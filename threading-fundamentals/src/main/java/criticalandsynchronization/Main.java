@@ -2,6 +2,7 @@ package criticalandsynchronization;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
+
         InventoryCounter inventoryCounter = new InventoryCounter();
         IncrementingThread incrementingThread = new IncrementingThread(inventoryCounter);
         DecrementingThread decrementingThread = new DecrementingThread(inventoryCounter);
@@ -38,7 +39,7 @@ public class Main {
         }
     }
 
-    public static class IncrementingThread implements Runnable{
+    public static class IncrementingThread extends  Thread{
         private InventoryCounter inventoryCounter;
 
         public IncrementingThread(InventoryCounter inventoryCounter){
@@ -58,20 +59,45 @@ public class Main {
     private static class InventoryCounter{
         private int items = 0;
 
-        public void increment(){
+        public synchronized void increment(){
             System.out.println(Thread.currentThread().getName());
             items++;
         }
 
-        public void decrement(){
+        public synchronized void decrement(){
             System.out.println(Thread.currentThread().getName());
             items--;
         }
 
-        public int getItems(){
+        public synchronized int getItems(){
             return items;
         }
+    }
 
+    private static class InventoryCounterNew{
+        private int items = 0;
+
+        Object object = new Object();
+
+        public void increment(){
+            synchronized (object){
+                System.out.println(Thread.currentThread().getName());
+                items++;
+            }
+        }
+
+        public void decrement(){
+            synchronized (object){
+                System.out.println(Thread.currentThread().getName());
+                items--;
+            }
+        }
+
+        public int getItems(){
+            synchronized (object){
+                return items;
+            }
+        }
     }
 
 }
